@@ -9,12 +9,16 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+import os
 from pathlib import Path
 from dotenv import dotenv_values
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-ENV = dotenv_values()
+ENV = {
+    **os.environ,
+    **dotenv_values(),
+}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -25,7 +29,13 @@ SECRET_KEY = ENV['DJANGO_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    ENV['DJANGO_ALLOWED_HOST'],
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    ENV['DJANGO_ALLOWED_ORIGIN'],
+]
 
 # Application definition
 
@@ -148,7 +158,7 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Coffilation API',
-    'VERSION': '1.0.0',
+    'VERSION': ENV.get('VERSION', '1.0.0'),
     'COMPONENT_SPLIT_REQUEST': True,
     'CAMELIZE_NAMES': True,
     'POSTPROCESSING_HOOKS': [
