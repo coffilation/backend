@@ -23,7 +23,7 @@ class CompilationViewSet(viewsets.ModelViewSet):
         return CompilationSerializer
 
     @extend_schema(responses={ 204: None })
-    @action(detail=True, methods=['post'], url_path='addPlaces')
+    @action(detail=True, methods=['post'])
     def add_places(self, request, pk):
         compilation = self.get_object()
         serializer = self.get_serializer(data=request.data)
@@ -32,7 +32,7 @@ class CompilationViewSet(viewsets.ModelViewSet):
         return Response(status=204)
 
     @extend_schema(responses={ 204: None })
-    @action(detail=True, methods=['post'], url_path='removePlaces')
+    @action(detail=True, methods=['post'])
     def remove_places(self, request, pk):
         compilation = self.get_object()
         serializer = self.get_serializer(data=request.data)
