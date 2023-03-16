@@ -16,14 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from rest_framework import routers
-from apps.places.views import PlaceViewSet, NominatimPlaceViewSet
-from apps.compilations.views import CompilationViewSet
-
-router = routers.DefaultRouter()
-router.register(r'places', PlaceViewSet, 'places')
-router.register(r'nominatim', NominatimPlaceViewSet, 'nominatim')
-router.register(r'compilations', CompilationViewSet, 'compilation')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,5 +24,5 @@ urlpatterns = [
     path('redoc', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-    path('', include(router.urls)),
+    path('', include('apps.router'))
 ]
