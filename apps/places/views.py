@@ -8,6 +8,8 @@ from .serializers import *
 from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import action
 
+from .enums import OSM_TYPE__TO_PREFIX
+
 
 class PlaceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = PlaceSerializer
@@ -16,29 +18,13 @@ class PlaceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
 
 class NominatimPlaceViewSet(viewsets.GenericViewSet):
     pagination_class = None
-    osm_type_to_prefix = {
-        'node': 'N',
-        'way': 'W',
-        'relation': 'R',
-    }
+
     nominatim_request_params = {
         'limit': REST_FRAMEWORK['PAGE_SIZE'],
         'format': 'jsonv2',
         'addressdetails': 1,
         'accept-language': 'ru',
     }
-
-    def get_place_object_from_nominatim_place(self, nominatim_place):
-        return {
-            'latitude': nominatim_place['lat'],
-            'longitude': nominatim_place['lon'],
-            'osm_id': nominatim_place['osm_id'],
-            'osm_type': nominatim_place['osm_type'],
-            'display_name': nominatim_place['display_name'],
-            'category': nominatim_place['category'],
-            'type': nominatim_place['type'],
-            'address': nominatim_place['address'],
-        }
 
     @extend_schema(parameters=[NominatimLookupQuerySerializer], responses=PlaceSerializer)
     @action(detail=False, methods=['get'])
@@ -54,21 +40,24 @@ class NominatimPlaceViewSet(viewsets.GenericViewSet):
                 NOMINATIM_LOOKUP_ENDPOINT,
                 params={
                     **self.nominatim_request_params,
-                    'osm_ids': self.osm_type_to_prefix[serializer.data['osm_type']] + str(
+                    'osm_ids': OSM_TYPE__TO_PREFIX[serializer.data['osm_type']] + str(
                         serializer.data['osm_id']
                     )
                 },
             ).json()
-            for place in lookup_data:
-                if place['category'] == serializer.data['category']:
-                    place_in_orm = Place.objects.create(
-                        **self.get_place_object_from_nominatim_place(place),
-                    )
-                    return Response(PlaceSerializer(place_in_orm).data)
-            return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_424_FAILED_DEPENDENCY)
+
+        for place in lookup_data:
+            if place['category'] == serializer.data['category']:
+                place_serializer = PlaceSerializer(data=place)
+                place_serializer.is_valid(raise_exception=True)
+
+                return Response(
+                    PlaceSerializer(Place.objects.create(**place_serializer.validated_data)).data
+                )
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
         parameters=[NominatimSearchQuerySerializer, OpenApiParameter(
@@ -92,28 +81,26 @@ class NominatimPlaceViewSet(viewsets.GenericViewSet):
                     **serializer.data,
                 }
             ).json()
-
-            Place.objects.bulk_create(
-                [
-                    Place(**self.get_place_object_from_nominatim_place(place))
-                    for place in search_data
-                ],
-                ignore_conflicts=True
-            )
-
-            place_query = reduce(
-                lambda query, place: query | Q(
-                    osm_id=place['osm_id'],
-                    osm_type=place['osm_type'],
-                    category=place['category'],
-                ),
-                search_data,
-                Q(),
-            )
-
-            places_in_orm = Place.objects.filter(place_query)
-
-            return Response(PlaceSerializer(places_in_orm, many=True).data)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_424_FAILED_DEPENDENCY)
+
+        place_serializer = PlaceSerializer(data=search_data, many=True)
+        place_serializer.is_valid(raise_exception=True)
+
+        Place.objects.bulk_create(
+            [Place(**place_data) for place_data in place_serializer.validated_data],
+            ignore_conflicts=True
+        )
+
+        place_query = reduce(
+            lambda query, place: query | Q(
+                osm_id=place['osm_id'],
+                osm_type=place['osm_type'],
+                category=place['category'],
+            ),
+            search_data,
+            Q(),
+        )
+
+        return Response(PlaceSerializer(Place.objects.filter(place_query), many=True).data)

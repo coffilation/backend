@@ -3,8 +3,8 @@ from django.db.models.constraints import UniqueConstraint
 
 
 class Place(models.Model):
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    lat = models.FloatField()
+    lon = models.FloatField()
     osm_id = models.BigIntegerField()
     osm_type = models.CharField(max_length=255)
     display_name = models.CharField(max_length=2000)

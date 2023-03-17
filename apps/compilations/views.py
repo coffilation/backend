@@ -10,7 +10,7 @@ class CompilationViewSet(viewsets.ModelViewSet):
     queryset = Compilation.objects.all()
 
     def get_permissions(self):
-        if self.request.method == 'POST':
+        if self.action == 'create':
             return [IsAuthenticated()]
         return []
 
