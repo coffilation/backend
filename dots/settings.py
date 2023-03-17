@@ -9,23 +9,27 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+import os
 from pathlib import Path
-from dotenv import dotenv_values
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-ENV = dotenv_values()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ENV['DJANGO_SECRET_KEY']
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(',')
+
+CSRF_TRUSTED_ORIGINS = os.getenv('DJANGO_ALLOWED_ORIGINS').split(',')
 
 # Application definition
 
@@ -82,10 +86,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'PORT': '5432',
-        'NAME': ENV['POSTGRES_USER'],
-        'USER': ENV['POSTGRES_USER'],
-        'PASSWORD': ENV['POSTGRES_PASSWORD'],
-        'HOST': ENV['POSTGRES_HOST']
+        'NAME': os.getenv('POSTGRES_USER'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST')
     }
 }
 
@@ -148,7 +152,7 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Coffilation API',
-    'VERSION': '1.0.0',
+    'VERSION': os.getenv('BACKEND_VERSION', '1.0.0'),
     'COMPONENT_SPLIT_REQUEST': True,
     'CAMELIZE_NAMES': True,
     'POSTPROCESSING_HOOKS': [
@@ -170,5 +174,5 @@ DJOSER = {
     },
 }
 
-NOMINATIM_SEARCH_ENDPOINT = ENV['NOMINATIM_SEARCH_ENDPOINT']
-NOMINATIM_LOOKUP_ENDPOINT = ENV['NOMINATIM_LOOKUP_ENDPOINT']
+NOMINATIM_SEARCH_ENDPOINT = os.getenv('NOMINATIM_SEARCH_ENDPOINT')
+NOMINATIM_LOOKUP_ENDPOINT = os.getenv('NOMINATIM_LOOKUP_ENDPOINT')
