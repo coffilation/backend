@@ -53,10 +53,8 @@ class NominatimPlaceViewSet(viewsets.GenericViewSet):
             if place['category'] == serializer.data['category']:
                 place_serializer = PlaceSerializer(data=place)
                 place_serializer.is_valid(raise_exception=True)
-
-                return Response(
-                    PlaceSerializer(Place.objects.create(**place_serializer.validated_data)).data
-                )
+                place_serializer.save()
+                return Response(place_serializer.data)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     @extend_schema(
@@ -89,7 +87,7 @@ class NominatimPlaceViewSet(viewsets.GenericViewSet):
         place_serializer.is_valid(raise_exception=True)
 
         Place.objects.bulk_create(
-            [Place(**place_data) for place_data in place_serializer.validated_data],
+            [Place(**place_data) for place_data in place_serializer.data],
             ignore_conflicts=True
         )
 
