@@ -16,9 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from rest_framework import routers
-
-router = routers.DefaultRouter()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,5 +24,5 @@ urlpatterns = [
     path('redoc', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-    path('', include(router.urls)),
+    path('', include('apps.router'))
 ]

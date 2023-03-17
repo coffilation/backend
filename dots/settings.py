@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
 from pathlib import Path
 from dotenv import dotenv_values
 
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'apps.places',
     'apps.compilations',
+    'apps.users',
 ]
 
 MIDDLEWARE = [
@@ -142,11 +142,12 @@ REST_FRAMEWORK = {
         'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
         'djangorestframework_camel_case.parser.CamelCaseJSONParser',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'Coffilation API',
     'VERSION': '1.0.0',
     'COMPONENT_SPLIT_REQUEST': True,
     'CAMELIZE_NAMES': True,
@@ -164,4 +165,10 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'LOGOUT_ON_PASSWORD_CHANGE': True,
+    'SERIALIZERS': {
+        'user': 'apps.users.serializers.UserSerializer',
+    },
 }
+
+NOMINATIM_SEARCH_ENDPOINT = ENV['NOMINATIM_SEARCH_ENDPOINT']
+NOMINATIM_LOOKUP_ENDPOINT = ENV['NOMINATIM_LOOKUP_ENDPOINT']
