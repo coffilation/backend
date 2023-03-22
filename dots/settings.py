@@ -159,6 +159,10 @@ SPECTACULAR_SETTINGS = {
         'drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields',
         'drf_spectacular.hooks.postprocess_schema_enums'
     ],
+    'SWAGGER_UI_SETTINGS': {
+        'persistAuthorization': True,
+        'displayRequestDuration': True,
+    },
 }
 
 DJOSER = {
