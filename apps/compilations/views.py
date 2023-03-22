@@ -15,7 +15,7 @@ class CompilationViewSet(viewsets.ModelViewSet):
         return []
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(owner=self.request.user)
 
     def get_serializer_class(self):
         if self.action in ('add_places', 'remove_places'):

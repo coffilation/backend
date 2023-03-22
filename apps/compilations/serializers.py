@@ -8,12 +8,11 @@ class CompilationSerializer(serializers.ModelSerializer):
     color_regex = r'^#[0-9a-f]{6}$'
     primary_color = serializers.RegexField(color_regex, allow_null=True)
     secondary_color = serializers.RegexField(color_regex, allow_null=True)
-    author = UserSerializer(read_only=True)
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = Compilation
-        fields = ('primary_color', 'secondary_color', 'is_private', 'name', 'description', 'author')
-        read_only_fields = ('author',)
+        fields = ('primary_color', 'secondary_color', 'is_private', 'name', 'description', 'owner')
 
 
 class CompilationPlacesSerializer(serializers.Serializer):
