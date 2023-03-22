@@ -1,17 +1,32 @@
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema
-from .serializers import Compilation, CompilationPlacesSerializer, CompilationSerializer
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+
+from .serializers import Compilation, CompilationPlacesSerializer, CompilationSerializer
+from .permissions import CanEditCompilation, CanDeleteCompilation
 
 
 class CompilationViewSet(viewsets.ModelViewSet):
-    queryset = Compilation.objects.all()
+    filterset_fields = ['is_private', 'owner', 'places']
+
+    def get_queryset(self):
+        query = Q(is_private=False)
+
+        if self.request.user.is_authenticated:
+            query |= Q(compilationmembership__user=self.request.user)
+
+        return Compilation.objects.filter(query).distinct()
 
     def get_permissions(self):
-        if self.action == 'create':
-            return [IsAuthenticated()]
+        if self.action in ('update', 'partial_update', 'add_places', 'remove_places'):
+            return (IsAuthenticated(), CanEditCompilation())
+
+        if self.action == 'destroy':
+            return (IsAuthenticated(), CanDeleteCompilation())
+
         return []
 
     def perform_create(self, serializer):
