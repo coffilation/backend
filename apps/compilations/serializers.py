@@ -9,6 +9,7 @@ class CompilationSerializer(serializers.ModelSerializer):
     primary_color = serializers.RegexField(color_regex, allow_null=True)
     secondary_color = serializers.RegexField(color_regex, allow_null=True)
     owner = UserSerializer(read_only=True)
+    description = serializers.CharField(allow_blank=False, allow_null=True)
 
     class Meta:
         model = Compilation

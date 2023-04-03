@@ -15,9 +15,12 @@ class CompilationMembershipsViewSet(viewsets.ModelViewSet):
         query = Q(compilation__is_private=False)
 
         if self.request.user.is_authenticated:
-            query |= Q(compilation__compilationmembership__user=self.request.user)
+            query |= Q(
+                compilation__is_private=True,
+                compilation__compilationmembership__user=self.request.user,
+            )
 
-        return CompilationMembership.objects.filter(query).distinct()
+        return CompilationMembership.objects.filter(query)
 
     def get_serializer_class(self):
         if self.action == 'create':
