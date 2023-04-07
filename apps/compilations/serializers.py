@@ -13,7 +13,7 @@ class CompilationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Compilation
-        fields = ('primary_color', 'secondary_color', 'is_private', 'name', 'description', 'owner')
+        fields = ('id', 'primary_color', 'secondary_color', 'is_private', 'name', 'description', 'owner')
 
 
 class CompilationPlacesSerializer(serializers.Serializer):

@@ -1,22 +1,11 @@
 from rest_framework.permissions import BasePermission
 
-from apps.compilation_memberships.models import CompilationMembershipRole
 
-
-class CanEditCompilationMembershipRole(BasePermission):
+class CanEditCompilationMembership(BasePermission):
     def has_object_permission(self, request, view, obj):
-        user_role = view.get_queryset().get(user=request.user, compilation=obj.compilation).role
-
-        return user_role >= CompilationMembershipRole.ADMIN \
-            and user_role > obj.role \
-            and user_role > request.data['role']
+        return obj.compilation__owner == request.user
 
 
 class CanDeleteCompilationMembership(BasePermission):
     def has_object_permission(self, request, view, obj):
-        if obj.user == request.user:
-            return True
-
-        user_role = view.get_queryset().get(user=request.user, compilation=obj.compilation).role
-
-        return user_role >= CompilationMembershipRole.ADMIN and user_role > obj.role
+        return obj.compilation__owner == request.user != obj.user

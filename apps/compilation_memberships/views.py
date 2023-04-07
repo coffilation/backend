@@ -3,13 +3,13 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from .models import CompilationMembership
-from .permissions import CanEditCompilationMembershipRole, CanDeleteCompilationMembership
+from .permissions import CanEditCompilationMembership, CanDeleteCompilationMembership
 from .serializers import CompilationMembershipCreateSerializer, CompilationMembershipSerializer
 
 
 class CompilationMembershipsViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filterset_fields = ['compilation', 'role']
+    filterset_fields = ['compilation', 'is_staff']
 
     def get_queryset(self):
         query = Q(compilation__is_private=False)
@@ -33,7 +33,7 @@ class CompilationMembershipsViewSet(viewsets.ModelViewSet):
             return (IsAuthenticated(),)
 
         if self.action in ('update', 'partial_update'):
-            return (IsAuthenticated(), CanEditCompilationMembershipRole())
+            return (IsAuthenticated(), CanEditCompilationMembership())
 
         if self.action in ('destroy'):
             return (IsAuthenticated(), CanDeleteCompilationMembership(),)

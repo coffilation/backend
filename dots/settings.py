@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'djoser',
     'drf_spectacular',
     'django_filters',
+    'guardian',
     'apps.places',
     'apps.compilations',
     'apps.users',
@@ -136,6 +137,11 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+)
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',

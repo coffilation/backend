@@ -1,17 +1,18 @@
 from rest_framework.permissions import BasePermission
 
-from apps.compilation_memberships.models import CompilationMembership, CompilationMembershipRole
+from .models import CompilationPermission
 
 
 class CanEditCompilation(BasePermission):
     def has_object_permission(self, request, view, obj):
-        user_role = CompilationMembership.objects.get(user=request.user, compilation=obj).role
+        return obj.has_perm(CompilationPermission.CHANGE_COMPILATION, request.user)
 
-        return user_role >= CompilationMembershipRole.EDITOR
+
+class CanChangeCompilationPlaces(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.has_perm(CompilationPermission.CHANGE_PLACES_LIST, request.user)
 
 
 class CanDeleteCompilation(BasePermission):
     def has_object_permission(self, request, view, obj):
-        user_role = CompilationMembership.objects.get(user=request.user, compilation=obj).role
-
-        return user_role >= CompilationMembershipRole.OWNER
+        return obj.owner == request.user

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CompilationMembership, CompilationMembershipRole
+from .models import CompilationMembership
 from apps.users.serializers import UserSerializer
 from ..compilations.models import Compilation
 
@@ -9,7 +9,7 @@ class CompilationMembershipSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CompilationMembership
-        fields = ('id', 'user', 'role')
+        fields = ('id', 'user', 'is_staff')
 
 
 class CompilationMembershipCreateSerializer(serializers.ModelSerializer):
@@ -21,5 +21,5 @@ class CompilationMembershipCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CompilationMembership
-        fields = ('id', 'user', 'role', 'compilation')
-        read_only_fields = ('role',)
+        fields = ('id', 'user', 'is_staff', 'compilation')
+        read_only_fields = ('is_staff',)

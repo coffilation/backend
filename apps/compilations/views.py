@@ -1,12 +1,16 @@
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
+from guardian.shortcuts import assign_perm
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import IsAuthenticated
+
+from apps.compilation_memberships.models import CompilationMembership
+from .enums import CompilationPermission
 
 from .serializers import Compilation, CompilationPlacesSerializer, CompilationSerializer
-from .permissions import CanEditCompilation, CanDeleteCompilation
+from .permissions import CanEditCompilation, CanDeleteCompilation, CanChangeCompilationPlaces
 
 
 class CompilationViewSet(viewsets.ModelViewSet):
@@ -27,10 +31,23 @@ class CompilationViewSet(viewsets.ModelViewSet):
         if self.action == 'destroy':
             return (IsAuthenticated(), CanDeleteCompilation())
 
+        if self.action in ('add_places', 'remove_places'):
+            return (IsAuthenticated(), CanChangeCompilationPlaces())
+
         return []
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        owner = self.request.user
+        compilation = serializer.save(owner=owner)
+
+        for permission in CompilationPermission.choices:
+            assign_perm(permission[0], owner, compilation)
+
+        CompilationMembership.objects.create(
+            compilation_id=serializer.data['id'],
+            user=self.request.user,
+            is_staff=True,
+        )
 
     def get_serializer_class(self):
         if self.action in ('add_places', 'remove_places'):
