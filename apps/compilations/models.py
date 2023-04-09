@@ -1,7 +1,6 @@
 from django.db import models
-from guardian.shortcuts import assign_perm
 
-from apps.compilations.enums import CompilationPermission
+from apps.compilation_permissions.enums import CompilationPermission
 from apps.places.models import Place
 from django.contrib.auth.models import User
 

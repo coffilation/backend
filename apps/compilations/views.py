@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
 from apps.compilation_memberships.models import CompilationMembership
-from .enums import CompilationPermission
+from apps.compilation_permissions.enums import CompilationPermission
 
 from .serializers import Compilation, CompilationPlacesSerializer, CompilationSerializer
 from .permissions import CanEditCompilation, CanDeleteCompilation, CanChangeCompilationPlaces
