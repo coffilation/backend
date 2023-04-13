@@ -12,7 +12,7 @@ compilation_permissions_urls = [
         views.CompilationPermissionsUserPermissions.as_view()
     ),
     path(
-        '<int:compilation_id>/<int:user_id>/<str:permission>',
+            '<int:compilation_id>/<int:user_id>/<str:permission>',
         views.CompilationPermissionsChangeUserPermissions.as_view()
     ),
 ]
