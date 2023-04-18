@@ -14,6 +14,7 @@ from .enums import OSM_TYPE__TO_PREFIX
 class PlaceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = PlaceSerializer
     queryset = Place.objects.all()
+    filterset_fields = ['compilation']
 
 
 class NominatimPlaceViewSet(viewsets.GenericViewSet):
