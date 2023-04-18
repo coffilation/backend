@@ -84,22 +84,27 @@ class NominatimPlaceViewSet(viewsets.GenericViewSet):
             print(e)
             return Response(status=status.HTTP_424_FAILED_DEPENDENCY)
 
-        place_serializer = PlaceSerializer(data=search_data, many=True)
-        place_serializer.is_valid(raise_exception=True)
+        queryset = Place.objects.none()
 
-        Place.objects.bulk_create(
-            [Place(**place_data) for place_data in place_serializer.data],
-            ignore_conflicts=True
-        )
+        if search_data:
+            place_serializer = PlaceSerializer(data=search_data, many=True)
+            place_serializer.is_valid(raise_exception=True)
 
-        place_query = reduce(
-            lambda query, place: query | Q(
-                osm_id=place['osm_id'],
-                osm_type=place['osm_type'],
-                category=place['category'],
-            ),
-            search_data,
-            Q(),
-        )
+            Place.objects.bulk_create(
+                [Place(**place_data) for place_data in place_serializer.data],
+                ignore_conflicts=True
+            )
 
-        return Response(PlaceSerializer(Place.objects.filter(place_query), many=True).data)
+            place_query = reduce(
+                lambda query, place: query | Q(
+                    osm_id=place['osm_id'],
+                    osm_type=place['osm_type'],
+                    category=place['category'],
+                ),
+                search_data,
+                Q(),
+            )
+
+            queryset = Place.objects.filter(place_query)
+
+        return Response(PlaceSerializer(queryset, many=True).data)
