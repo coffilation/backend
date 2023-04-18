@@ -6,14 +6,14 @@ from apps.users.serializers import UserSerializer, User
 
 class CompilationSerializer(serializers.ModelSerializer):
     color_regex = r'^#[0-9a-f]{6}$'
-    primary_color = serializers.RegexField(color_regex, allow_null=True)
-    secondary_color = serializers.RegexField(color_regex, allow_null=True)
-    author = UserSerializer(read_only=True)
+    primary_color = serializers.RegexField(color_regex, required=False)
+    secondary_color = serializers.RegexField(color_regex, required=False)
+    owner = UserSerializer(read_only=True)
+    description = serializers.CharField(required=False)
 
     class Meta:
         model = Compilation
-        fields = ('primary_color', 'secondary_color', 'is_private', 'name', 'description', 'author')
-        read_only_fields = ('author',)
+        fields = ('id', 'primary_color', 'secondary_color', 'is_private', 'name', 'description', 'owner')
 
 
 class CompilationPlacesSerializer(serializers.Serializer):
