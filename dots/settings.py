@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.compilations',
     'apps.users',
     'apps.compilation_memberships',
+    'apps.map',
 ]
 
 MIDDLEWARE = [
