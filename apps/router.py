@@ -2,6 +2,7 @@ from rest_framework import routers
 from django.urls import path, include
 
 from apps.compilation_permissions.urls import compilation_permissions_urls
+from apps.map.views import MapPlaceViewSet
 from apps.places.views import PlaceViewSet, NominatimPlaceViewSet
 from apps.compilations.views import CompilationViewSet
 from apps.compilation_memberships.views import CompilationMembershipsViewSet
@@ -15,6 +16,7 @@ router.register(
     CompilationMembershipsViewSet,
     'compilation_memberships'
 )
+router.register(r'map/places', MapPlaceViewSet, 'map_places')
 
 urlpatterns = [
     path('', include(router.urls)),

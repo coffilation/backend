@@ -63,6 +63,7 @@ class NominatimPlaceViewSet(viewsets.GenericViewSet):
             'viewbox',
             description='`x1,y1,x2,y2`\n\n`x` is longitude, `y` is latitude',
             default='29.608218,60.049997,30.694038,59.760964',
+            required=True,
         )],
         responses=PlaceSerializer(many=True)
     )
