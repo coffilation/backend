@@ -92,7 +92,7 @@ class NominatimPlaceViewSet(viewsets.GenericViewSet):
             place_serializer.is_valid(raise_exception=True)
 
             Place.objects.bulk_create(
-                [Place(**place_data) for place_data in place_serializer.data],
+                [Place(**place_data) for place_data in place_serializer.validated_data],
                 ignore_conflicts=True
             )
 

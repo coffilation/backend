@@ -1,3 +1,4 @@
+from django.contrib.gis.geos import GEOSGeometry, Point
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from .models import Place
@@ -64,12 +65,45 @@ class AddressField(serializers.JSONField):
     pass
 
 
+class GeometryField(serializers.Field):
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, value):
+        return value
+
+
 class PlaceSerializer(serializers.ModelSerializer):
     address = AddressField()
+    geometry = GeometryField()
 
     class Meta:
         model = Place
-        fields = '__all__'
+        fields = (
+            'id',
+            'address',
+            'osm_id',
+            'osm_type',
+            'display_name',
+            'category',
+            'type',
+            'geometry',
+        )
+
+    def to_internal_value(self, data):
+        data['geometry'] = Point(float(data['lon']), float(data['lat']))
+        data = super().to_internal_value(data)
+        return data
+
+    def to_representation(self, instance):
+        instance = super().to_representation(instance)
+
+        geometry = instance['geometry']
+        del instance['geometry']
+        instance['lon'] = geometry.x
+        instance['lat'] = geometry.y
+
+        return instance
 
 
 class NominatimLookupQuerySerializer(serializers.Serializer):

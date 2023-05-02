@@ -2,7 +2,7 @@ version: '3'
 
 services:
   database:
-    image: postgres:15
+    image: postgis/postgis:15-master
     ports:
       - '5432:5432'
     environment:
@@ -33,6 +33,20 @@ services:
       - '--providers.docker.exposedByDefault=false'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+  backend:
+    command: python manage.py runserver 0.0.0.0:8000
+    working_dir: /home/app
+    expose:
+      - 8000
+    build: .
+    volumes:
+      - .:/home/app
+    profiles:
+      - backend
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.backend.rule=Host(`backend.coffilation.localhost`)'
 
 
 volumes:
