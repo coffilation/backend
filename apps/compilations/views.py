@@ -14,7 +14,7 @@ from .permissions import CanEditCompilation, CanDeleteCompilation, CanChangeComp
 
 
 class CompilationViewSet(viewsets.ModelViewSet):
-    filterset_fields = ['is_private', 'owner', 'places']
+    filterset_fields = ['is_private', 'owner', 'places', 'compilationmembership__user']
 
     def get_queryset(self):
         query = Q(is_private=False)
