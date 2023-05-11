@@ -21,9 +21,9 @@ class CompilationViewSet(viewsets.ModelViewSet):
         query = Q(is_private=False)
 
         if self.request.user.is_authenticated:
-            query |= Q(compilationmembership__user=self.request.user)
+            query |= Q(is_private=True, compilationmembership__user=self.request.user)
 
-        return Compilation.objects.filter(query).distinct()
+        return Compilation.objects.filter(query)
 
     def get_permissions(self):
         if self.action in ('update', 'partial_update', 'add_places', 'remove_places'):
