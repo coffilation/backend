@@ -9,12 +9,13 @@ from rest_framework.permissions import IsAuthenticated
 from apps.compilation_memberships.models import CompilationMembership
 from apps.compilation_permissions.enums import CompilationPermission
 
+from .filters import CompilationsFilterSet
 from .serializers import Compilation, CompilationPlacesSerializer, CompilationSerializer
 from .permissions import CanEditCompilation, CanDeleteCompilation, CanChangeCompilationPlaces
 
 
 class CompilationViewSet(viewsets.ModelViewSet):
-    filterset_fields = ['is_private', 'owner', 'places', 'compilationmembership__user']
+    filterset_class = CompilationsFilterSet
 
     def get_queryset(self):
         query = Q(is_private=False)
