@@ -1,7 +1,7 @@
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from guardian.shortcuts import assign_perm
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -9,8 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from apps.compilation_memberships.models import CompilationMembership
 from apps.compilation_permissions.enums import CompilationPermission
 
-from .filters import CompilationsFilterSet
-from .serializers import Compilation, CompilationPlacesSerializer, CompilationSerializer
+from .filters import CompilationsFilterSet, CompilationsPopulatedByPlaceInclusionFilterSet
+from .serializers import Compilation, CompilationPlacesSerializer, CompilationPopulatedByPlaceSerializer, CompilationSerializer
 from .permissions import CanEditCompilation, CanDeleteCompilation, CanChangeCompilationPlaces
 
 
@@ -72,3 +72,21 @@ class CompilationViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         compilation.places.remove(*serializer.data['place_ids'])
         return Response(status=204)
+
+
+class CompilationPopulatedByPlaceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    filterset_class = CompilationsPopulatedByPlaceInclusionFilterSet
+    serializer_class = CompilationPopulatedByPlaceSerializer
+
+    def get_queryset(self):
+        query = Q(is_private=False)
+
+        if self.request.user.is_authenticated:
+            query |= Q(is_private=True, compilationmembership__user=self.request.user)
+
+        return Compilation.objects.filter(query)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({ 'place': self.request.query_params.get('place') })
+        return context

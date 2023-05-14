@@ -13,7 +13,15 @@ class CompilationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Compilation
-        fields = ('id', 'primary_color', 'secondary_color', 'is_private', 'name', 'description', 'owner')
+        fields = (
+            'id',
+            'primary_color',
+            'secondary_color',
+            'is_private',
+            'name',
+            'description',
+            'owner',
+        )
 
 
 class CompilationPlacesSerializer(serializers.Serializer):
@@ -21,3 +29,14 @@ class CompilationPlacesSerializer(serializers.Serializer):
         queryset=Place.objects.all(),
         many=True
     )
+
+
+class CompilationPopulatedByPlaceSerializer(CompilationSerializer):
+    is_place_included = serializers.SerializerMethodField()
+
+    def get_is_place_included(self, obj):
+        return obj.places.filter(id=self.context['place']).exists()
+
+    class Meta:
+        model = CompilationSerializer.Meta.model
+        fields = CompilationSerializer.Meta.fields + ('is_place_included',)
