@@ -3,6 +3,7 @@ import django_filters
 from django.contrib.gis.geos import Polygon
 from rest_framework import serializers
 
+from apps.compilations.models import Compilation
 from apps.map.constants import viewbox_pattern
 from apps.places.models import Place
 
@@ -10,13 +11,13 @@ from apps.places.models import Place
 class MapPlacesFilterSet(django_filters.FilterSet):
     class Meta:
         model = Place
-        fields = ['compilation']
+        fields = []
 
-    viewbox = django_filters.CharFilter(
-        field_name='geometry',
-        method='filter_by_viewbox',
+    compilation = django_filters.ModelMultipleChoiceFilter(
         required=True,
+        queryset=Compilation.objects.all(),
     )
+    viewbox = django_filters.CharFilter(field_name='geometry', method='filter_by_viewbox')
 
     def filter_by_viewbox(self, queryset, name, value):
         if not re.match(viewbox_pattern, value):
