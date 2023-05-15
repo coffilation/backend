@@ -10,12 +10,13 @@ from apps.places.models import Place
 class MapPlacesFilterSet(django_filters.FilterSet):
     class Meta:
         model = Place
-        fields = ['compilation']
+        fields = []
 
+    compilation = django_filters.NumberFilter(required=True)
     viewbox = django_filters.CharFilter(
         field_name='geometry',
         method='filter_by_viewbox',
-        required=True,
+        required=False,
     )
 
     def filter_by_viewbox(self, queryset, name, value):
