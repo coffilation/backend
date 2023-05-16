@@ -38,7 +38,7 @@ jobs:
           script: |
             set -e
             export BACKEND_VERSION=$VERSION
-            cd /home/github/coffilation-deploy
+            cd ./deploy
             docker image prune -a -f --filter "until=24h"
             docker compose run backend_migrations
             docker compose up -d backend --no-build --remove-orphans

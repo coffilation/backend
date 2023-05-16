@@ -93,11 +93,15 @@ WSGI_APPLICATION = 'dots.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'PORT': '5432',
+        'PORT': os.getenv('POSTGRES_PORT'),
         'NAME': os.getenv('POSTGRES_USER'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST')
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'OPTIONS': {
+            'sslmode': 'require',
+            'target_session_attrs': 'read-write',
+        },
     }
 }
 
@@ -137,7 +141,7 @@ STATIC_URL = 'static/'
 
 SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
