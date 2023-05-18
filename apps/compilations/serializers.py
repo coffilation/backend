@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import Compilation
 from apps.places.models import Place
-from apps.users.serializers import UserSerializer, User
+from apps.users.serializers import UserSerializer
+from ..compilation_permissions.enums import CompilationPermission
 
 
 class CompilationSerializer(serializers.ModelSerializer):
@@ -33,10 +34,14 @@ class CompilationPlacesSerializer(serializers.Serializer):
 
 class CompilationPopulatedByPlaceSerializer(CompilationSerializer):
     is_place_included = serializers.SerializerMethodField()
+    can_change_places_list = serializers.SerializerMethodField()
 
     def get_is_place_included(self, obj):
         return obj.places.filter(id=self.context['place']).exists()
 
+    def get_can_change_places_list(self, obj):
+        return self.context['user'].has_perm(CompilationPermission.CHANGE_PLACES_LIST, obj)
+
     class Meta:
         model = CompilationSerializer.Meta.model
-        fields = CompilationSerializer.Meta.fields + ('is_place_included',)
+        fields = CompilationSerializer.Meta.fields + ('is_place_included', 'can_change_places_list')

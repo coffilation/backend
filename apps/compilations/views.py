@@ -26,7 +26,7 @@ class CompilationViewSet(viewsets.ModelViewSet):
         return Compilation.objects.filter(query).distinct()
 
     def get_permissions(self):
-        if self.action in ('update', 'partial_update', 'add_places', 'remove_places'):
+        if self.action in ('update', 'partial_update'):
             return (IsAuthenticated(), CanEditCompilation())
 
         if self.action == 'destroy':
@@ -77,6 +77,7 @@ class CompilationViewSet(viewsets.ModelViewSet):
 class CompilationPopulatedByPlaceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     filterset_class = CompilationsPopulatedByPlaceInclusionFilterSet
     serializer_class = CompilationPopulatedByPlaceSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         query = Q(is_private=False)
@@ -88,5 +89,10 @@ class CompilationPopulatedByPlaceViewSet(mixins.ListModelMixin, viewsets.Generic
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context.update({ 'place': self.request.query_params.get('place') })
+        context.update(
+            {
+                'place': self.request.query_params.get('place'),
+                'user': self.request.user,
+            }
+        )
         return context
