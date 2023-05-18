@@ -85,7 +85,7 @@ class CompilationPopulatedByPlaceViewSet(mixins.ListModelMixin, viewsets.Generic
         if self.request.user.is_authenticated:
             query |= Q(is_private=True, compilationmembership__user=self.request.user)
 
-        return Compilation.objects.filter(query)
+        return Compilation.objects.filter(query).distinct()
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
