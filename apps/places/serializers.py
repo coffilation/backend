@@ -1,5 +1,5 @@
 from django.contrib.gis.geos import GEOSGeometry, Point
-from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 from .models import Place
 
@@ -73,6 +73,7 @@ class GeometryField(serializers.Field):
         return value
 
 
+@extend_schema_serializer(exclude_fields=['geometry'])
 class PlaceSerializer(serializers.ModelSerializer):
     address = AddressField()
     geometry = GeometryField()
