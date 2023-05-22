@@ -26,6 +26,9 @@ class CompilationViewSet(viewsets.ModelViewSet):
         return Compilation.objects.filter(query).distinct()
 
     def get_permissions(self):
+        if self.action == 'create':
+            return (IsAuthenticated(),)
+
         if self.action in ('update', 'partial_update'):
             return (IsAuthenticated(), CanEditCompilation())
 
