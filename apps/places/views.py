@@ -3,7 +3,7 @@ import requests
 from django.db.models import Q
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.response import Response
-from dots.settings import NOMINATIM_LOOKUP_ENDPOINT, NOMINATIM_SEARCH_ENDPOINT, REST_FRAMEWORK
+from dots.settings.base import NOMINATIM_LOOKUP_ENDPOINT, NOMINATIM_SEARCH_ENDPOINT, REST_FRAMEWORK
 from .serializers import *
 from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import action

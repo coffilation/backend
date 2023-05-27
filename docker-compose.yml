@@ -37,6 +37,8 @@ services:
   backend:
     command: python manage.py runserver 0.0.0.0:8000
     working_dir: /home/app
+    env_file:
+      - .env
     expose:
       - 8000
     build: .

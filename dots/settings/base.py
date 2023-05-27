@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(',')
 
@@ -98,10 +98,10 @@ DATABASES = {
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': os.getenv('POSTGRES_HOST'),
-        # 'OPTIONS': {
-        #     'sslmode': 'require',
-        #     'target_session_attrs': 'read-write',
-        # },
+        'OPTIONS': {
+            'sslmode': 'require',
+            'target_session_attrs': 'read-write',
+        },
     }
 }
 
